@@ -1,0 +1,30 @@
+services:
+  gfnode1:
+    image: "gf-cluster-node:latest"
+    ports:
+      - "2221:22"
+      - "24848:24848"
+      - "28080:28080"
+      - "28181:28181"
+  gfnode2:
+    image: "gf-cluster-node:latest"
+    ports:
+      - "2222:22"
+      - "24849:24848"
+      - "28081:28080"
+      - "28182:28181"
+  gfnode3:
+    image: "gf-cluster-node:latest"
+    ports:
+      - "2223:22"
+      - "24850:24848"
+      - "28082:28080"
+      - "28183:28181"
+  gfadmin:
+    image: "gf-cluster-admin:latest"
+    ports:
+      - "4848:4848"
+  apache:
+    image: "httpd:latest"
+    ports:
+      - "443:443"

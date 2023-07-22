@@ -1,0 +1,1 @@
+bin/asadmin --interactive false multimode -f setup.commands
