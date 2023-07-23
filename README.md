@@ -1,53 +1,47 @@
 # A GlassFish cluster with Apache loadbalancer in Docker
 
 You'll get a cluster with 3 instances, Admin Console, Apache loadbalancer.
-A sample application clusterjsp will be deployed on the cluster. It will be available at the following addresses:
 
-* https://localhost:28181/clusterjsp
-* https://localhost:28182/clusterjsp
-* https://localhost:28183/clusterjsp
+The GlassFish Admin Console will be available at:
 
-## 1. Build GlassFish Admin docker image
+* https://localhost:14848 (not the default 4848 ! )
+* admin user:     `admin`
+* admin password: `admin`
 
-Run the following:
+A sample application clusterjsp will be deployed on the cluster. It will be available at the following address:
 
-```
-docker build --pull --rm -t gf-cluster-admin glassfish-admin
-```
+* https://localhost:44443/clusterjsp
 
-## 2. Build GlassFish Node docker image
+## Start the cluster
 
-In the directory `glassfish-node`, run the following:
-
-```
-docker build --pull --rm -t gf-cluster-node glassfish-node
-```
-
-## 3. Build Apache docker image
-
-To do...
-
-## 4. Start the cluster
-
-In the root directory (make sure that the directory is named `glassfish-apache-cluster`), start all containers using Docker compose:
+In the root directory, start all containers using Docker compose:
 
 ``
-docker compose -f "docker-compose.yml" up -d --build
+docker compose up -d --build
 ``
 
+## Administer the cluster
 
-## 5. Setup the cluster after docker compose started:
+You can configure the GlassFish cluster in the Admin Console.
 
-```
-docker run -e AS_ADMIN_HOST=gfadmin --rm --network=glassfish-apache-cluster_default gf-cluster-admin:latest ./setup
-```
+You can open terminal for each server:
+* Admin Console: `docker exec -it glassfish-apache-cluster-gfadmin-1 bash`
+* Instance 1: `docker exec -it glassfish-apache-cluster-gfnode1-1 bash`
+* Instance 2: `docker exec -it glassfish-apache-cluster-gfnode2-1 bash`
+* Instance 3: `docker exec -it glassfish-apache-cluster-gfnode3-1 bash`
+* Apache Server: `docker exec -it glassfish-apache-cluster-apache-1 bash`
 
-where `glassfish-apache-cluster` is the name of the directory where the `docker-compose.yml`` file is located.
+## Configuration
 
-## When done, stop everything
+### Apache server
 
-Run
+* Persistent configuration in `apache/httpd.conf`
+* Configuration in the container: `/usr/local/apache2/conf/httpd.conf`
+* See: https://hub.docker.com/_/httpd
 
-```
-docker compose -f "docker-compose.yml" down
-```
+### GlassFish
+
+* Persistent configuration in `glassfish-admin/setup.commands` - list of asadmin commands that are executed when docker containers are created
+* Configuration in the container: 
+  * edit in Admin Console
+  * or open the terminal for the container (`docker exec -it glassfish-apache-cluster-gfadmin-1 bash`) and use `bin/asdadmin` as usual

@@ -1,30 +1,61 @@
 services:
   gfnode1:
-    image: "gf-cluster-node:latest"
+    build: ./glassfish-node
     ports:
-      - "2221:22"
-      - "24848:24848"
-      - "28080:28080"
-      - "28181:28181"
-  gfnode2:
-    image: "gf-cluster-node:latest"
-    ports:
-      - "2222:22"
-      - "24849:24848"
+      - "2201:22"
       - "28081:28080"
-      - "28182:28181"
-  gfnode3:
-    image: "gf-cluster-node:latest"
+      - "28181:28181"
+      - "29001:29009"
+    networks:
+      - cluster-network
+  gfnode2:
+    build: ./glassfish-node
     ports:
-      - "2223:22"
-      - "24850:24848"
+      - "2202:22"
       - "28082:28080"
+      - "28182:28181"
+      - "29002:29009"
+    networks:
+      - cluster-network
+  gfnode3:
+    build: ./glassfish-node
+    ports:
+      - "2203:22"
+      - "28083:28080"
       - "28183:28181"
+      - "29003:29009"
+    networks:
+      - cluster-network
   gfadmin:
-    image: "gf-cluster-admin:latest"
+    build: ./glassfish-admin
     ports:
-      - "4848:4848"
+      - "14848:4848"
+    networks:
+      - cluster-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4848"]
+      interval: 1s
+      timeout: 10s
+      retries: 100
+  config:
+    build: ./glassfish-admin
+    depends_on: 
+      gfadmin:
+        condition: service_healthy
+    command: ./setup
+    environment:
+      - AS_ADMIN_HOST=gfadmin
+    networks:
+      - cluster-network
   apache:
-    image: "httpd:latest"
+    build: ./apache
+    depends_on: 
+      config:
+        condition: service_completed_successfully
     ports:
-      - "443:443"
+      - "44443:443"
+    networks:
+      - cluster-network
+
+networks:
+  cluster-network:

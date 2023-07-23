@@ -2,6 +2,7 @@ create-node-ssh --nodehost gfnode1 --installdir '${com.sun.aas.productRoot}' --s
 create-node-ssh --nodehost gfnode2 --installdir '${com.sun.aas.productRoot}' --sshport 22 --sshuser glassfish remote-node2
 create-node-ssh --nodehost gfnode3 --installdir '${com.sun.aas.productRoot}' --sshport 22 --sshuser glassfish remote-node3
 copy-config --systemproperties jvmRoute='${com.sun.aas.instanceName}' default-config cluster-config
+set configs.config.cluster-config.java-config.debug-enabled=true
 create-cluster --config cluster-config glassfish-cluster
 create-instance --node remote-node1 --cluster glassfish-cluster instance1
 create-instance --node remote-node2 --cluster glassfish-cluster instance2
